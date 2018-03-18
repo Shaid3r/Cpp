@@ -1,0 +1,70 @@
+\documentclass[11pt]{beamer}
+
+% options
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usetheme{Boadilla}
+\usecolortheme{beaver}
+
+\lstset{ %
+language=C++,                % choose the language of the code
+keywordstyle=\bfseries,
+stringstyle=\color{red}\ttfamily, % typewriter type for strings
+showspaces=false,               % show spaces adding particular underscores
+showstringspaces=true,         % underline spaces within strings
+showtabs=false,                 % show tabs within strings adding particular underscores
+tabsize=2,			% sets default tabsize to 2 spaces
+captionpos=b,			% sets the caption-position to bottom
+breaklines=true,		% sets automatic line breaking
+breakatwhitespace=false,	% sets if automatic breaks should only happen at whitespace
+escapeinside={\%*}{*)},          % if you want to add a comment within your code
+}
+
+\newcommand{\cpp}{\textbf{C++}}
+
+%% preamble
+\title{Szablony w \cpp}
+\author[]{Adrian Wysocki, Kamil Warchoł, Michał Szczepańczyk}
+%\leftmark{The first author wants to thank someone.}
+
+\begin{document}
+
+%% title frame
+\begin{frame}
+\titlepage
+\end{frame}
+\author{}
+%% normal frame
+\begin{frame}{Szablony Wysockiego}
+The body of the frame.
+\end{frame}
+
+\begin{frame}
+    \begin{itemize}
+    \item Hello, World!\alert{highlighted} jjhhk
+    \begin{block}{Remark}
+Sample text
+\end{block}
+    \item Hello, Mars!
+    \item Hello, Alpha Centauri!
+    \end{itemize}
+    \newtheorem{thm}{Easy Theorem}
+    \begin{thm}<1->
+$$x^n+y^n=z^n,$$
+has no integer solutions for $n>2$
+where $x,\,y,\,z\,\neq\,0$.
+\end{thm}
+\end{frame}
+
+\begin{frame}[fragile]{fdksja}
+
+\begin{lstlisting}[frame=single]  % Start your code-block
+template <typename T>
+Box {...};
+template <typename T> BoxOpis : public Box<T> {...};
+\end{lstlisting}
+
+\end{frame}
+
+
+\end{document}
