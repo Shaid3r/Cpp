@@ -144,20 +144,21 @@ typename Container::value_type sum(Container s) {
 \end{frame}
 
 \begin{frame}[fragile]{Jak tworzone są type traits?}
+  \begin{itemize}
+ \item Najczęściej:
  \begin{itemize}
-  \item są zaimplementowane przez kompilator
+ 
+ \item są zaimplementowane przez kompilator
   \item wykorzystują priorytetowość częściowych specjalizacji szablonów
   \item wykorzystują zjawisko SFINAE (Substitution Failure Is Not An Error)
  \end{itemize}
+ \end{itemize}
 \end{frame}
-
 
 \begin{frame}[fragile]{Klasy cech - budowa}
     \begin{itemize}
-     \item 
+     \item Przykładowa klasa type traits:
     \end{itemize}
-    
-    Przykładowy Type Traits:
     \begin{lstlisting}[frame=single]
 template <typename T>
 struct TypeTraits {
@@ -169,7 +170,27 @@ struct TypeTraits {
     };
 };
     \end{lstlisting}
-    
+\end{frame}
+
+\begin{frame}[fragile]{std::integral\_constant - podstawowy type traits class}
+    \begin{itemize}
+     \item warto go zapamiętać, ponieważ jest on często wykorzystywany do implementacji wielu innych type traitsów
+    \end{itemize}
+    \begin{lstlisting}[frame=single]
+template <typename T, T val>
+struct integral_constant {
+   static const T value = val;
+   typedef T value_type;
+   typedef integral_constant<T, val>  type;
+   constexpr operator value_type() const noexcept { return value; }
+};
+
+/// Typ uzywany jako boolean (true) w czasie kompilacji
+typedef integral_constant<bool, true>  true_type;
+/// Typ uzywany jako boolean (false) w czasie kompilacji
+typedef integral_constant<bool, false> false_type;
+
+    \end{lstlisting}
 \end{frame}
 
 \begin{frame}[fragile]{Implementacja is\_reference - priorytetowość częściowych specjalizacji szablonów}
@@ -194,10 +215,10 @@ int main() {
     std::cout << my_trait<int>::isReference << std::endl; // false
 }
  \end{lstlisting}
-\alert{Przykład 3.4}
+\alert{Przykład 3.2}
 \end{frame}
 
-\begin{frame}[fragile]{Przykładowe zastosowanie 1 - warunkowa kompilacja}
+\begin{frame}[fragile]{Zastosowanie type traits 1 - warunkowa kompilacja}
  \begin{lstlisting}[frame=single,basicstyle=\tiny]
 #include <type_traits>
 
@@ -215,10 +236,35 @@ int main() {
 }
     \end{lstlisting}
     
-    \alert{Przykład 3.2}
+    \alert{Przykład 3.3}
 \end{frame}
 
-\begin{frame}[fragile]{Implementacja enable\_if - przykład SFINAE}
+\begin{frame}[fragile]{SFINAE - Substitution Failure Is Not An Error}
+    \begin{lstlisting}[frame=single,basicstyle=\tiny]
+struct Test {
+    typedef int foo;
+};
+
+template <typename T> 
+void f(typename T::foo) {} // Definicja #1
+
+template <typename T> 
+void f(T) {}               // Definicja #2
+
+int main() {
+    f<Test>(10); // Wywola #1.
+    f<int>(10);  // Wywola #2.
+}
+    \end{lstlisting}
+    
+    \begin{itemize}
+     \item kompilator wykonuje int::foo, co powoduje błąd kompilacji, jednak kompilacja nie jest przerywana dzięki SFINAE
+    \end{itemize}
+
+    \alert{Przykład 3.4}
+\end{frame}
+
+\begin{frame}[fragile]{Implementacja enable\_if - zastosowanie SFINAE}
     \begin{itemize}
         \item enable\_if może być używane na 3 sposoby w szablonach funkcji:
         \begin{itemize}
@@ -245,7 +291,7 @@ struct enable_if<true, T> {
     \alert{Przykład 3.5}
 \end{frame}
 
-\begin{frame}[fragile]{Przykładowe zastosowanie 2 - optymalizacja algorytmu}
+\begin{frame}[fragile]{Zastosowanie type traits 2 - optymalizacja algorytmu}
  \begin{lstlisting}[frame=single,basicstyle=\tiny]
 template<typename I1, typename I2, bool b>
 I2 copy_imp(I1 first, I1 last, I2 out, const integral_constant<bool, b>&) {
