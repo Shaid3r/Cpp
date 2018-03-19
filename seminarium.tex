@@ -41,6 +41,58 @@ escapeinside={\%*}{*)},          % if you want to add a comment within your code
 The body of the frame.
 \end{frame}
 
+\begin{frame}[fragile]{Typy domyślne}
+    \begin{itemize}
+        \item Typ w deklaracji typów szablonowych może mieć typ domyślny 
+        \item Dotyczy to \textbf{tylko i wyłącznie} szablonów klas
+    \end{itemize}
+    \begin{lstlisting}[frame=single]
+template<typename T = int>
+class Collection {
+    T * data;
+public:
+    explicit Collection(std::size_t size)
+    : data(new T[size]) {}
+    ...
+};
+
+Collection<double> double_col(20);
+Collection<> def_col(30);
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Typy domyślne - ograniczenia}
+    \begin{itemize}
+        \item Typy domyślne mogą zostać zadeklarowane tylko dla typów znajdujących się po prawej stronie -- analogicznie jak wartości domyślne w funkcjach
+    \end{itemize}
+    \begin{lstlisting}[frame=single]
+template<typename First, typename Second = double,
+         typename Last>       // zle
+
+template<typename First, typename Second = double,
+         typename Last = int> // dobrze
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Parametry "nietypowe" -- non-type parameters}
+    \begin{itemize}
+        \item Parametrami szablonów nie muszą być typy, mogą być to również wartości całkowite
+        \item Jednakże ich wartość musi być znana już podczas \textbf{kompilacji}
+    \end{itemize}
+    \begin{lstlisting}[frame=single]
+template<typename T, std::size_t size>
+class Collection {
+    T data[size];
+    ...
+};
+
+Collection<unsigned long, 10> col; // dobrze
+
+int i = 20;
+Collection<double, i> bad_col;     // zle
+    \end{lstlisting}
+\end{frame}
+
 \begin{frame}[fragile]{Typy stowarzyszone - cz. 1}
     \begin{itemize}
         \item W klasach i funkcjach szablonów możemy za pomocą typedef definiować również typy, nazywane stowarzyszonymi z daną klasą.
