@@ -44,7 +44,7 @@ The body of the frame.
 \begin{frame}[fragile]{Typy domyślne}
     \begin{itemize}
         \item Typ w deklaracji typów szablonowych może mieć typ domyślny 
-        \item Dotyczy to \textbf{tylko i wyłącznie} szablonów klas
+        \item Dotyczy to \textbf{tylko i wyłącznie} szablonów klas (do C++11)
     \end{itemize}
     \begin{lstlisting}[frame=single]
 template<typename T = int>
@@ -90,6 +90,83 @@ Collection<unsigned long, 10> col; // dobrze
 
 int i = 20;
 Collection<double, i> bad_col;     // zle
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Dozwolone typy}
+    \begin{itemize}
+        \item Dozwolonymi typami w nie-typowych parametrach są (opcjonalnie z kwalifikatorami cv):
+        \begin{itemize}
+            \item typy całkowite i wyliczeniowe (enum)
+            \item wskaźnik do obiektu albo funkcji
+            \item referencja do l-wartości
+            \item wskaźnik do składnika klasy (w tym funkcji składowej)
+            \item std::nullptr\_t
+        \end{itemize}
+    \end{itemize}
+    \alert{Przykład 2.1}
+\end{frame}
+
+\begin{frame}[fragile]{Aliasy typów}
+    \begin{itemize}
+        \item Od standardu C++11 istnieje alternatywna składnia dla słowa kluczowego typedef
+    \begin{lstlisting}[frame=single]
+typedef std::vector<int, Alloc<int>> vec_int;
+vec_int v;  // std::vector<int, Alloc<int>> v;
+
+using vec_dbl = std::vector<double, Alloc<double>>;
+vec_dbl vd; // std::vector<double, Alloc<double>> vd;
+    \end{lstlisting}
+        \item Ogólna składnia wygląda następująco:
+\begin{lstlisting}[frame=single]
+using alias_typu = nazwa_typu;
+    \end{lstlisting}
+    
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Aliasy szablonowe}
+    \begin{itemize}
+        \item Oprócz alternatywnej składni aliasy mogą być szablonowane
+        \item Dzięki temu możemy stworzyć wygodne aliasy zależne od typu
+    \end{itemize}
+    \begin{lstlisting}[frame=single]
+template <typename T>
+using ptr = T*;
+
+int x;
+ptr<x> = &x;
+ptr<const char> = "Hello, world!";
+    \end{lstlisting}
+    \alert{Przykład 2.2}
+\end{frame}
+
+\begin{frame}[fragile]{Zmienne szablonowe (C++14)}
+    \begin{itemize}
+        \item Przed standardem C++14 "zmienne szablonowe" były opakowywane w klasy
+    \end{itemize}
+    \begin{lstlisting}[frame=single]
+template <typename T>
+struct is_void {
+    static constexpr bool value = ...;
+};
+
+std::cout << std::boolalpha << is_void<int>::value
+          << std::endl;
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Zmienne szablonowe}
+    \begin{itemize}
+        \item Wykorzystując zmienne szablonowe możemy uzyskać ten sam efekt pisząc mniej kodu
+        \item Jest to tzw. "lukier składniowy" (syntactic sugar) - pod spodem wszystko działa jakby zmienna była statycznym polem klasy szablonowej
+    \end{itemize}
+    \begin{lstlisting}[frame=single]
+template <typename T>
+constexpr bool is_void_v = ...;
+
+std::cout << std::boolalpha << is_void_v<int>
+          << std::endl;
     \end{lstlisting}
 \end{frame}
 
