@@ -1,9 +1,9 @@
 CXX = g++
 CXXFLAGS = -Wall -Wextra -pedantic -MMD -MP -g
-CXXFLAGS += -std=c++14
+CXXFLAGS += -std=c++17
 LDFLAGS =
 
-APP = example_2-2
+APP = example_2-4
 ZIP = $(APP)-Warchol.tgz
 
 SRC = $(wildcard *.cpp)

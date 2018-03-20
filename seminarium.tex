@@ -95,7 +95,7 @@ Collection<double, i> bad_col;     // zle
 
 \begin{frame}[fragile]{Dozwolone typy}
     \begin{itemize}
-        \item Dozwolonymi typami w nie-typowych parametrach są (opcjonalnie z kwalifikatorami cv):
+        \item Dozwolonymi typami w poza-typowych parametrach są (opcjonalnie z kwalifikatorami cv):
         \begin{itemize}
             \item typy całkowite i wyliczeniowe (enum)
             \item wskaźnik do obiektu albo funkcji
@@ -169,6 +169,194 @@ std::cout << std::boolalpha << is_void_v<int>
           << std::endl;
     \end{lstlisting}
 \end{frame}
+
+\begin{frame}[fragile]{Variadic templates}
+    \begin{itemize}
+        \item Variadic templates to funkcje/klasy szablonowe przyjmujące zmienną liczbę argumentów
+        \item Język C i C++ wspierał funkcje ze zmienną liczbą argumentów, chociażby printf()
+        \item Funkcje takie były jednak niebezpieczne -- brak sprawdzania poprawności typów
+        \item Od C++11 możliwe jest tworzenie funkcji szablonowych przyjmujących zmienną liczbę argumentów
+        \item Dodatkowo typ każdego argumentu może być inny
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Variadic templates -- składania}
+    \begin{itemize}
+        \item Wielokropek określa paczkę parametrów
+        \item Paczka parametrów może zawierać dowolną liczbę parametrów, włącznie z zerem
+    \end{itemize}
+    \begin{lstlisting}[frame=single]
+template <typename... Args>
+void do_sth(Args... args) {
+    ...
+}
+
+template <typename First, typename... Rest>
+struct Tuple {
+    ...
+};
+
+Tuple<int, double, std::string> three_elems;
+Tuple<long> one_elem;
+    \end{lstlisting}
+    \alert{Przykład 2.3}
+\end{frame}
+
+\begin{frame}[fragile]{Variadic templates}
+    \begin{itemize}
+        \item Język nie posiada składni do rozpatrywania pojedynczych elementów z paczki parametrów
+        \item Jednakże istnieje możliwość znalezienia liczby przesłanych parametrów za pomocą operatora sizeof...
+    \end{itemize}
+    \begin{lstlisting}[frame=single]
+template <typename... Args>
+void variadic(Args... args) {
+    std::cout << sizeof...(args) << std::endl;
+}
+
+variadic(1, 2, 3, 'a'); // wypisze 4
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Variadic templates -- rozpakowywanie}
+    \begin{itemize}
+        \item Wielokropek przed nazwą paczki rozpakowywuje parametry do listy oddzielonej przecinkiem
+        \item Można to wykorzystać w kilku kontekstach
+    \end{itemize}
+    \begin{lstlisting}[frame=single]
+template <typename... Bases>
+class Derived : public Bases... {
+    Derived(const Bases&... bases) : Bases(bases)... {
+    ...
+    }
+};
+
+Derived<B1, B2, B3> derived1 { B1{}, B2{}, B3{} };
+Derived<B4, B5>     derived2 { B4{}, B5{} };
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Variadic templates -- fold expressions}
+    \begin{itemize}
+        \item Istnieje możliwość utworzenia wyrażenia zawierającego wszystkie parametry
+        \item Wymaganiem jednak jest posiadanie kompilatora wspierającago standard C++17
+    \begin{lstlisting}[frame=single]
+template <typename... Args>
+auto expr(Args... args) {
+    return ((2 * args) + ...);
+    \end{lstlisting}
+        \item W powyższym przykładzie wyrażenie zostanie rozwinięte do postaci\\(2 * arg1) + (2 * arg2) + (2 * arg3) + ...
+    \end{itemize} 
+    \alert{Przykład 2.4}
+\end{frame}
+
+\begin{frame}[fragile]{Fold expressions -- składnia}
+    \begin{itemize}
+        \item Składnia wygląda następująco:
+        \begin{itemize}
+            \item ( pack op ... )
+            \item ( ... op pack )
+            \item ( pack op ... op init)
+            \item ( init op ... op pack )
+        \end{itemize}
+        \item Dozwolonymi operatorami są:
+        \begin{itemize}
+            \item dwuargumentowe operatory arytmetyczne
+            \item dwuargumentowe operatory bitowe
+            \item dwuargumentowe operatory relacyjne
+            \item operator przecinek, .*, -\verb|>|*
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Variadic templates -- rekurencja}
+    \begin{itemize}
+        \item Aby wykonać bardziej skomplikowane operacje na każdym argumencie z osobna musimy wykorzystać rekurencję
+        \item Oprócz tego funkcja powinna przyjmować co najmniej jeden argument niepochodzący z paczki argumentów
+        \item Dodatkowo należy zapewnić warunek zatrzymania wywołań rekurencyjnych
+        \item W tym celu stosuje się zwykłą, nieszablonową funkcję, która nie przyjmuje parametrów
+    \end{itemize}
+    \alert{Przykład 2.5}
+\end{frame}
+
+\begin{frame}[fragile]{Klasy parametryzowane wytycznymi}
+    \begin{itemize}
+        \item Klasy parametryzowane wytycznymi (policy classes) to technika konstruowania klas przy pomocy szablonów, dzięki której takie klasy mogą mieć dużo bardziej elastyczne wykorzystanie
+        \item Wytyczne to nic innego jak klasy, które będą określać zachowanie klasy projektowanej
+        \item Z tej techniki korzystają głównie twórcy bibliotek
+        \item W bibliotece standardowej kolekcje są parametryzowane wytycznymi -- alokatory
+    \end{itemize}
+    \begin{lstlisting}[frame=single, basicstyle=\tiny]
+template <typename T, typename ErrorHandling = NoChecking<T>>
+class SmartPtr : public ErrorHandling {
+    ...
+};
+
+SmartPtr<int> ptr1;
+SmartPtr<int, StrictChecking<int>> ptr2;
+    \end{lstlisting}
+    \alert{Przykład 2.6}
+\end{frame}
+
+\begin{frame}[fragile]{Szablonowe parametry szablonów}
+    \begin{itemize}
+        \item W poprzednim przykładzie musieliśmy jawnie przekazać parametr do szablonu klasy ErrorHandling:
+        \begin{lstlisting}[frame=single]
+SmartPtr<int, StrictChecking<int>> ptr;
+    \end{lstlisting}
+        \item Nic nie stoi na przeszkodzie aby użytkownik podał drugi parametr w zły sposób:
+        \begin{lstlisting}[frame=single]
+SmartPtr<int, SomeOtherClass> ptr1;
+SmartPtr<int, StrictChecking<double>> ptr2;
+    \end{lstlisting}
+        \item Z pomocą przychodzą nam szablonowe parametry szablonów
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Szablonowe parametry szablonów}
+    \begin{itemize}
+        \item Składnia szablonowych parametrów szablonów wygląda następująco (w zastosowaniu do naszego przykładu):
+        \begin{lstlisting}[frame=single, basicstyle=\tiny]
+template <typename T,
+          template <typename U> class ErrorHandling = NoChecking>
+class SmartPtr : public ErrorHandling<T> {
+    ...
+}
+
+SmartPtr<int, SomeOtherClass> ptr1;         // blad kompilacji
+SmartPtr<int, StrictChecking<double>> ptr2; // blad kompilacji
+SmartPtr<int, StrictChecking<int>> ptr3;    // rowniez blad kompilacji
+SmartPtr<int, StrictChecking> ptr4;         // OK
+    \end{lstlisting}
+        \item Dzięki takiemu podejściu oddelegowujemy odpowiedzialność za zgodność typów klasy SmartPtr z klasą wytyczną ErrorHandling do definicji klasy SmartPtr
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Szablonowe parametry szablonów -- pułapki}
+    \begin{itemize}
+        \item Należy jednak wziąc pod uwagę ważny aspekt -- ilość parametrów w szablonowym parametrze musi się zgadzać z ilością parametrów przyjmowanych przez dany szablon:
+    \begin{lstlisting}[frame=single, basicstyle=\tiny]
+template <typename T,
+          template <typename> typename Collection> // C++17
+class CollectionWrapper {
+    Collection<T> col;
+    ...
+};
+
+CollectionWrapper<int, std::vector> cw; // blad kompilacji,
+                                        // std::vector oczekuje dwoch parametrow
+    \end{lstlisting}
+        \item Aby to poprawić należy dodać kolejny parametr:
+    \begin{lstlisting}[frame=single, basicstyle=\tiny]
+template <typename T,
+          template <typename, typename> typename Collection>
+class CollectionWrapper {
+    Collection<T, std::allocator<T>> col;
+    ...
+};
+    \end{lstlisting}   
+    \end{itemize} 
+\end{frame}
+
 
 \begin{frame}[fragile]{Typy stowarzyszone - cz. 1}
     \begin{itemize}
