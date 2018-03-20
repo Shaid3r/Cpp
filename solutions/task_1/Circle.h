@@ -1,6 +1,8 @@
 #pragma once
 #include "Utils.h"
 #include <cmath>
+#include "cstdlib"
+#include <iostream>
 
 template<typename Derived>
 class Circle {
@@ -21,6 +23,10 @@ public:
     void update(float percent) {
         for (unsigned int x = 0; x < m_width; ++x) {
             for (unsigned int y = 0; y < m_height; ++y) {
+
+			    self().RandomCalculations();
+
+
                 float x2 = x - m_width / 2.0f;
                 float y2 = y - m_height / 2.0f;
                 float r = sqrtf(x2 * x2 + y2 * y2);
@@ -36,6 +42,8 @@ public:
         }
     }
 private:
+
+
     Derived &self() {
         return static_cast<Derived &>(*this);
     }
@@ -52,4 +60,6 @@ private:
     unsigned int m_width;
     unsigned int m_height;
     sf::Uint8 *pixels = nullptr;
+
+    int m_tab[500000];
 };

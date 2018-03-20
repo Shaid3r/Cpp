@@ -4,6 +4,12 @@
 
 class HSVCircle : public Circle<HSVCircle> {
 public:
+
+	void RandomCalculations() {
+
+ 	};
+
+
     sf::Color calc(float phi, float r, float percent) {
         return hsv2rgb(phi, r, percent);
     }

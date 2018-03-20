@@ -4,6 +4,11 @@
 
 class RGBCircle : public Circle<RGBCircle> {
 public:
+	void RandomCalculations() {
+
+ 	};
+
+
     sf::Color calc(float phi, float r, float percent) {
         auto red = static_cast<sf::Uint8>(r * 255);
         auto green = static_cast<sf::Uint8>(phi * 255);

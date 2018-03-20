@@ -4,6 +4,9 @@
 
 class HSLCircle : public Circle {
 public:
+    void RandomCalculations() const override {}
+
+
     sf::Color calc(float phi, float r, float percent) const override {
         return hsl2rgb(phi, r, percent);
     }

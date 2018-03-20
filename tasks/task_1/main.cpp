@@ -1,3 +1,27 @@
+/* Zadanie 1
+ *
+ * POLIMORFIZM DYNAMICZNY ---> POLIMORFIZM STATYCZNY
+ *
+ * Jest to przerobione zadanie od prof. Malinowskiego
+ * z przedmiotu Podstawy Grafiki Komputerowej
+ *
+ * Zadanie polegało na wyrysowaniu 3 kół, przedstawiających
+ * w różnych modelach kolorów" HSL, RGB, HSV. Istnieje klasa
+ * Circle, z której dziedziczą 3 koła które należało narysować
+ *	
+ * Na potrzeby tych zajęć zadanie to zostało bardzo uproszczone
+ * i nie rysujemy, żadnych kółek, a jedynie liczymy czas obliczania
+ * poszczególnych pikseli
+ * 
+ * Nie trzeba znać działania funkcji obliczających by rozwiązać to zadanie
+ *
+ * Można (a nawet trzeba) modyfikować każdy z plików, poza "Utils.h"
+ * 
+ * W zadaniu należy przekształcić polimorfizm dynamiczny
+ * na polimorfizm statyczny
+ *
+ */
+
 #include "HSLCircle.h"
 #include "HSVCircle.h"
 #include "RGBCircle.h"
@@ -7,7 +31,7 @@
 typedef std::chrono::high_resolution_clock Clock;
 
 const int radius = 200;
-const int frames = 20;
+const int frames = 500;
 
 class App {
 public:
