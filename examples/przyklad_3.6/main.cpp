@@ -112,11 +112,10 @@ const int iter_count = 1000000;
 int main()
 {
    typedef std::chrono::high_resolution_clock Clock;
-   typedef std::chrono::duration<double> duration;
+   typedef std::chrono::milliseconds duration;
 
-   duration result;
    int i;
-   cout << "Measuring times in micro-seconds per 1000 elements processed" << endl << endl;
+   cout << "Measuring times in milli-seconds per 1000 elements processed" << endl << endl;
    cout << "testing copy...\n"
    "[Some standard library versions may already perform this optimisation.]" << endl;
    
@@ -129,7 +128,7 @@ int main()
    {
       opt::copy(ci_array, ci_array + array_size, i_array);
    }
-   result = Clock::now() - start;
+   auto result = std::chrono::duration_cast<duration>(Clock::now() - start);
    cout << "opt::copy<const int*, int*>: " << result.count() << endl;
 
    // cache load:
@@ -141,7 +140,7 @@ int main()
    {
       non_opt::copy(ci_array, ci_array + array_size, i_array);
    }
-   result = Clock::now() - start;
+   result = std::chrono::duration_cast<duration>(Clock::now() - start);
    cout << "non_opt::copy<const int*, int*>: " << result.count() << endl;
 
    // cache load:
@@ -153,7 +152,7 @@ int main()
    {
       std::copy(ci_array, ci_array + array_size, i_array);
    }
-   result = Clock::now() - start;
+   result = std::chrono::duration_cast<duration>(Clock::now() - start);
    cout << "std::copy<const int*, int*>: " << result.count() << endl;
 
    // cache load:
@@ -165,7 +164,7 @@ int main()
    {
       opt::copy(cc_array, cc_array + array_size, c_array);
    }
-   result = Clock::now() - start;
+   result = std::chrono::duration_cast<duration>(Clock::now() - start);
    cout << "opt::copy<const char*, char*>: " << result.count() << endl;
 
    // cache load:
@@ -177,7 +176,7 @@ int main()
    {
       non_opt::copy(cc_array, cc_array + array_size, c_array);
    }
-   result = Clock::now() - start;
+   result = std::chrono::duration_cast<duration>(Clock::now() - start);
    cout << "non_opt::copy<const char*, char*>: " << result.count() << endl;
 
    // cache load:
@@ -189,7 +188,7 @@ int main()
    {
       std::copy(cc_array, cc_array + array_size, c_array);
    }
-   result = Clock::now() - start;
+   result = std::chrono::duration_cast<duration>(Clock::now() - start);
    cout << "std::copy<const char*, char*>: " << result.count() << endl;
 
    return 0;
