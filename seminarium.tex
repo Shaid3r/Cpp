@@ -4,13 +4,13 @@
 \usepackage[utf8]{inputenc}
 \usepackage{polski}
 \usepackage{listings}
-
 \usetheme{Boadilla}
 \usecolortheme{beaver}
 
 \lstset{ %
 language=C++,                % choose the language of the code
 keywordstyle=\bfseries,
+basicstyle=\color{black} \small,
 stringstyle=\color{red}\ttfamily, % typewriter type for strings
 showspaces=false,               % show spaces adding particular underscores
 showstringspaces=true,         % underline spaces within strings
@@ -598,7 +598,234 @@ escapeinside={\%*}{*)},          % if you want to add a comment within your code
 
 \end{frame}
 
+\begin{frame}[fragile]{Typy stowarzyszone - cz. 1}
+    \begin{itemize}
+        \item W klasach i funkcjach szablonów możemy za pomocą typedef definiować również typy, nazywane stowarzyszonymi z daną klasą.
+        \item Dzięki temu możemy odwoływać się do nich z innego miejsca
+    \end{itemize}
+    \begin{lstlisting}[frame=single]
+template<typename T, int size>
+class Stack {
+    typedef T value_type;
+    value_type x[size];
+    ...
+};
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Typy stowarzyszone - cz. 2}
+    \begin{lstlisting}[frame=single,basicstyle=\small]
+template<typename Container>
+typename Container::value_type sum(Container s) {
+    typename Container::value_type total = 0;
+    
+    for (int i = 0; i < s.size(); ++i)
+        total += s[i];
+
+    return total;
+}
+    \end{lstlisting}
+    \begin{itemize}
+        \item Słowo kluczowe \textbf{typename} jest tutaj wymagane, bez niego kompilator założyłby że Container::value\_type jest zmienną statyczną lub enumem.
+        \item Bez typów stowarzyszonych musielibyśmy przekazać typ elementów kontenera w osobnym argumencie. Dlatego ten mechanizm jest bardzo czesto używany w uogólnionym kodzie.
+    \end{itemize}
+    \alert{Przykład 3.1} 
+\end{frame}
+
+\begin{frame}[fragile]{Type Traits - cechy typów}
+    \begin{itemize}
+     \item są to szablonowe metafunkcje, które zwracają informację o typie w czasie kompilacji
+     \item są dostępne w bibliotece Boost C++, Loki oraz od standardu C++11 znajdują się również w pliku nagłówkowym \textbf{$<$type\_traits$>$} w bibliotece standardowej
+     \item dostępne cechy można podzielić na:
+      \begin{itemize}
+       \item sprawdzające kategorie typów (is\_pointer, is\_enum)
+       \item sprawdzające własności typów (is\_fundamental, is\_polymorphic)
+       \item sprawdzające relacje między różnymi typami (is\_same, is\_convertible)
+       \item modyfikujące typ (remove\_const, remove\_volatile, make\_unsigned)
+       \item inne (enable\_if, conditional)
+      \end{itemize}
+    \item można również tworzyć własne cechy klas
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Jak tworzone są type traits?}
+  \begin{itemize}
+ \item Najczęściej:
+ \begin{itemize}
+ 
+ \item są zaimplementowane przez kompilator
+  \item wykorzystują priorytetowość częściowych specjalizacji szablonów
+  \item wykorzystują zjawisko SFINAE (Substitution Failure Is Not An Error)
+ \end{itemize}
+ \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Klasy cech - budowa}
+    \begin{itemize}
+     \item Przykładowa klasa type traits:
+    \end{itemize}
+    \begin{lstlisting}[frame=single]
+template <typename T>
+struct TypeTraits {
+    typedef T type;
+    const static bool isConst = false;
+    enum {
+        isPointer = false,
+        isRef = false,
+    };
+};
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{std::integral\_constant - podstawowy type traits class}
+    \begin{itemize}
+     \item warto go zapamiętać, ponieważ jest on często wykorzystywany do implementacji wielu innych type traitsów
+    \end{itemize}
+    \begin{lstlisting}[frame=single]
+template <typename T, T val>
+struct integral_constant {
+   static const T value = val;
+   typedef T value_type;
+   typedef integral_constant<T, val>  type;
+   constexpr operator value_type() const noexcept { return value; }
+};
+
+/// Typ uzywany jako boolean (true) w czasie kompilacji
+typedef integral_constant<bool, true>  true_type;
+/// Typ uzywany jako boolean (false) w czasie kompilacji
+typedef integral_constant<bool, false> false_type;
+
+    \end{lstlisting}
+\end{frame}
+
+\begin{frame}[fragile]{Implementacja is\_reference - priorytetowość częściowych specjalizacji szablonów}
+ \begin{lstlisting}[frame=single,basicstyle=\tiny]
+#include <iostream>
+
+template<typename T>
+struct my_trait {
+    static const bool isReference = false;
+//    enum {isReference = false};
+};
+
+template<typename T>
+struct my_trait<T &> {
+    static const bool isReference = true;
+//    enum {isReference = true};
+};
+
+int main() {
+    std::cout << std::boolalpha;
+    std::cout << my_trait<int &>::isReference << std::endl; // true
+    std::cout << my_trait<int>::isReference << std::endl; // false
+}
+ \end{lstlisting}
+\alert{Przykład 3.2}
+\end{frame}
+
+\begin{frame}[fragile]{Zastosowanie type traits 1 - warunkowa kompilacja}
+ \begin{lstlisting}[frame=single,basicstyle=\tiny]
+#include <type_traits>
+
+template<typename T,
+        typename= typename std::enable_if<std::is_enum<T>::value, void>::type>
+void foo(T t) {}
+
+enum Enum1 {A, B};
+enum class Enum2 {C, D};
+
+int main() {
+    foo<>(A);
+    foo(Enum2::C);
+//    foo(1); // blad kompilacji - "no matching function for call to 'foo(int)'"
+}
+    \end{lstlisting}
+    
+    \alert{Przykład 3.3}
+\end{frame}
+
+\begin{frame}[fragile]{SFINAE - Substitution Failure Is Not An Error}
+    \begin{lstlisting}[frame=single,basicstyle=\tiny]
+struct Test {
+    typedef int foo;
+};
+
+template <typename T> 
+void f(typename T::foo) {} // Definicja #1
+
+template <typename T> 
+void f(T) {}               // Definicja #2
+
+int main() {
+    f<Test>(10); // Wywola #1.
+    f<int>(10);  // Wywola #2.
+}
+    \end{lstlisting}
+    
+    \begin{itemize}
+     \item kompilator wykonuje int::foo, co powoduje błąd kompilacji, jednak kompilacja nie jest przerywana dzięki SFINAE
+    \end{itemize}
+
+    \alert{Przykład 3.4}
+\end{frame}
+
+\begin{frame}[fragile]{Implementacja enable\_if - zastosowanie SFINAE}
+    \begin{itemize}
+        \item enable\_if może być używane na 3 sposoby w szablonach funkcji:
+        \begin{itemize}
+            \item jako typ zwracany zkonkretyzowanej funkcji
+            \item jako dodatkowy parametr zkonkretyzowanej funkcji
+            \item jako dodatkowy parametr szablonu
+        \end{itemize} 
+    \end{itemize}
 
 
+    \begin{lstlisting}[frame=single,basicstyle=\tiny]
+template <bool Condition, typename T = void>
+struct enable_if {
+    // Brak 'type', wiec proba uzycia spowoduje fail substitution
+};
+
+// czesciowa specjalizacja, kiedy Condition == true
+template <typename T>
+struct enable_if<true, T> {
+    using type = T;
+};
+    \end{lstlisting}
+
+    \alert{Przykład 3.5}
+\end{frame}
+
+\begin{frame}[fragile]{Zastosowanie type traits 2 - optymalizacja algorytmu}
+ \begin{lstlisting}[frame=single,basicstyle=\tiny]
+template<typename I1, typename I2, bool b>
+I2 copy_imp(I1 first, I1 last, I2 out, const integral_constant<bool, b>&) {
+   while(first != last) {
+      *out = *first;
+      ++out;
+      ++first;
+   }
+   return out;
+}
+
+template<typename T>
+T* copy_imp(const T* first, const T* last, T* out, const true_type&) {
+   memmove(out, first, (last-first)*sizeof(T));
+   return out+(last-first);
+}
+
+template<typename I1, typename I2>
+I2 copy(I1 first, I1 last, I2 out) {
+   //
+   // We can copy with memcpy if T has a trivial assignment operator,
+   // and if the iterator arguments are actually pointers (this last
+   // requirement we detect with overload resolution):
+   //
+   typedef typename std::iterator_traits<I1>::value_type value_type;
+   // If a type has a trivial assignment-operator then the operator has the same effect as copying the bits of one object to the other: calls to the operator can be safely replaced with a call to memcpy.
+   return copy_imp(first, last, out, has_trivial_assign<value_type>());
+}
+    \end{lstlisting}
+\end{frame}
 
 \end{document}
