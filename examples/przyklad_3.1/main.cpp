@@ -4,7 +4,8 @@
 
 template<typename Container>
 typename Container::value_type sum(Container s) {
-    typename Container::value_type total = 0;
+    typedef typename Container::value_type elements_type;
+    elements_type total = elements_type();
 
     for (unsigned int i = 0; i < s.size(); ++i)
         total += s[i];
