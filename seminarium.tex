@@ -37,8 +37,565 @@ escapeinside={\%*}{*)},          % if you want to add a comment within your code
 \end{frame}
 \author{}
 %% normal frame
-\begin{frame}{Szablony Wysockiego}
-The body of the frame.
+\begin{frame}{Szablony}
+	\begin{itemize}
+		 \item szablon - sposób na ogólne zapisanie funkcji lub klasy
+		 \item dzięki szablonom możliwe programowanie uogólnione
+		 \item instrukcja dla kompilatora, jak stworzyć definicje
+		 \item automatyzacja procesu generowania roznych odmian funkcji i klas
+		 \item nie skracają kodu wynikowego
+		\item szablon klasy zawsze musi znaleźć się w zasięgu globalnym
+		\item przydatne, gdy potrzebne nam są funkcje  używające tego samego algorytmu, lub klasy o takiej samej strukturze, ale dla innego typu danych
+	\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Tworzenie szablonu klasy cz.1}
+	\begin{itemize}
+		\item słowo kluczowe template - informacja dla kompilatora, że definiujemy szablon
+		\item typename / class
+		\item lepiej używać typename
+		\item przykładowe definiowanie szablonu klasy:
+	\end{itemize}
+	
+	\begin{lstlisting}[frame=single]  % Start your code-block
+		
+		template<typename Nazwa_Typu>
+		class Nazwa_Klasy
+		{
+			Nazwa_Typu m_tab[9999];
+		}
+	\end{lstlisting}
+	
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Tworzenie szablonu klasy cz.2}
+	\begin{itemize}
+		\item metody klasy szablonowej, można definiować w klasie
+		\
+	\end{itemize}
+	
+	\begin{lstlisting}[frame=single]  % Start your code-block
+		
+		template<typename Nazwa_Typu>
+		class Nazwa_Klasy
+		{
+			...
+			Nazwa_Typu m_element;
+			Nazwa_Typu getElement() { return m_element; }
+			...
+		}
+	\end{lstlisting}
+	
+\end{frame}
+
+
+\begin{frame}[fragile]{Tworzenie szablonu klasy cz.3}
+	\begin{itemize}
+		\item metody klasy szablonowej, można definiować też poza klasą
+		\
+	\end{itemize}
+	
+	\begin{lstlisting}[frame=single]  % Start your code-block
+		
+		template<typename Nazwa_Typu>
+		class Nazwa_Klasy
+		{
+			...
+			Nazwa_Typu m_element;
+			Nazwa_Typu getElement();
+		}
+		template<typename Nazwa_Typu>
+		Nazwa_Typu Nazwa_Klasy<NazwaTypu>::getElement()
+		{
+			return m_element;
+		}
+	\end{lstlisting}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Użycie szablonu klasy cz.1}
+	\begin{itemize}
+		\item szablonów nie można osobno skompilować
+		\item mając zdefiniowany szablon klasy, nadal nie mamy definicji klasy
+		\item trzeba utworzyć jej konkretyzację:
+	\end{itemize}
+	
+	\begin{lstlisting}[frame=single]  % Start your code-block
+		
+		int main()
+		{
+			...
+			Nazwa_Klasy<Typ1> nazwa_obiektu_1;	
+			Nazwa_Klasy<Typ2> nazwa_obiektu_2;	
+			...
+		}
+		\end{lstlisting}
+	
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Użycie szablonu klasy cz.2}
+	\begin{itemize}
+		\item kompilator napotykając taką konstrukcję stworzy dwie odrębne definicje klasy i metod
+	\end{itemize}
+	
+	\alert{przyklad\_1.1}
+	
+	\begin{itemize}
+		\item w przykładzie zakładamy, że możliwe jest przypisywanie jednego elementu do drugiego
+		
+		\item w powyższych przykładach Nazwa\_Typu to "parametry typowe szablonów" 
+	\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]{Użycie szablonu klasy cz.3}
+	\begin{itemize}
+		\item trzeba jawnie podawać dany typ dla szablonów klas
+		\item dla funkcji nie trzeba było tego robić ponieważ kompilator sam mógł sprawdzić typ
+		
+	\begin{lstlisting}[frame=single]  % Start your code-block
+		
+		template<typename T1, typename T2>
+		void foo(T1 arg1, T2 arg2) {...}
+		
+		int main()
+		{
+			int x = 1;
+			double y = 5.25;
+			foo(x, y);
+		}
+		
+	\end{lstlisting}
+	\end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Ograniczenia Szablonów Klasy}
+	\begin{itemize}
+		\item trudno jest napisać szablon, który będzie działał dla każdego typu
+		\item podawanie typu na którym nie będą działały niektóre metody
+		\item niepoprawne stosowanie szablonów z parametrem wskaźnikowym
+	\end{itemize}
+	
+	\begin{lstlisting}[frame=single]  % Start your code-block
+		
+		template<typename T>
+		struct Wrapper 
+		{
+			T m_value;
+			bool operator>(T &wrapper)
+			{
+				return m_value > wrapper.m_value;
+			} 
+		}	
+		
+	\end{lstlisting}
+	
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Argumenty pozatypowe szablonu cz.1}
+	\begin{itemize}
+		\item parametrem dla szablonu nie musi być typ
+		\item argument pozatypowy musi być liczbą całkowitą, typem wyliczeniowym, wskaźnikiem lub referencją
+	\end{itemize}
+	
+	\begin{lstlisting}[frame=single]  % Start your code-block
+		
+		template<typename T, int SIZE>
+		Class Array 
+		{
+			...
+		}
+		
+	\end{lstlisting}
+	\alert{przyklad\_1.2}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Argumenty pozatypowe szablonu cz.2}
+	\begin{itemize}
+		\item nie mozna pobierac adresu argumentow pozatypowych
+		\item nie mozna modyfikowac argumentow pozatypowych
+	\end{itemize}
+	
+	\begin{lstlisting}[frame=single]  % Start your code-block
+		
+		template<typename T, int SIZE>
+		Class Array 
+		{
+			...
+			Array()
+			{
+				SIZE++;     // ZLE
+			}
+			...
+		}
+		
+	\end{lstlisting}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Argumenty pozatypowe szablonu cz.3}
+	\begin{itemize}
+		\item jakie są zalety, a jakie wady takiego podejścia?
+	\end{itemize}
+	
+	\begin{lstlisting}[frame=single]  % Start your code-block
+		
+		int main()
+		{	
+			...
+			std::array<double, 4> arr1;    // stos
+			std::array<double, 6> arr2;
+			...
+			std::vector<double> vec1(4);  // sterta
+			std::vector<double> vec2(6);
+			...
+		}		
+	\end{lstlisting}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Argumenty pozatypowe szablonu cz.4}
+	\begin{itemize}
+		\item jako parametr do szablonu można również przekazać... inny szablon
+	
+	
+	\begin{lstlisting}[frame=single]  % Start your code-block
+	
+		template<template<typename T> class Nazwa_1>
+		class Nazwa_2
+		{
+			...
+			Nazwa_1<int> m_element;
+			...
+		}
+	\end{lstlisting}
+	\item o tym dokładnie później
+	\end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]{Duża elastyczność szablonów}
+	\begin{itemize}
+		\item na klasach szablonowych można używać tych samych technik co na zwykłych klasach
+		\item mogą być klasą bazową
+		\item mogą być klasą pochodną
+		\item mogą być zawierać się w innej klasie
+		\item mogą być argumentem dla innych szablonów
+		\item mogą być używane rekurencyjnie: 
+	\end{itemize}
+	\alert{przykład\_1.3}
+	
+	\begin{lstlisting}[frame=single]  % Start your code-block
+		
+	int main
+	{
+		std::array<std::stack<Inna_Klasa>, 10> Array;
+		...
+		std::stack<std::stack<int>> Stack;
+	}
+	\end{lstlisting}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Więcej parametrów będących typem}
+	\begin{itemize}
+		\item można przesyłać więcej niż jeden typ
+		\item np. w bibliotece STL szablon "pair"
+			
+	\end{itemize}
+	
+	\begin{lstlisting}[frame=single]  % Start your code-block
+		
+		int main()
+		{
+			pair<int, char> PAIR1 ;
+		 
+			PAIR1.first = 100;
+			PAIR1.second = 'G' ;
+		 
+			cout << PAIR1.first << " " ;
+			cout << PAIR1.second << endl ;
+		 
+		 	// 100 G		 
+			return 0;
+		}
+	\end{lstlisting}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Parametry domyśle szablonu}
+	\begin{itemize}
+		\item podobnie jak dla funkcji, czy metod można określić domyślne parametry szablonu
+		\item często używane w implementacji STL'a
+			
+	\end{itemize}
+	
+	\begin{lstlisting}[frame=single]  % Start your code-block
+		
+		template <typename T1, typename T2 = double> 
+		class Nazwa_Klasy {...};
+		
+		int main()
+		{
+			...
+			Nazwa_Klasy<int> object; // object jest typu
+			...	               // Nazwa_klasy<int, double>
+		}
+	\end{lstlisting}
+
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]{Specjalizacja szablonu}
+	\begin{itemize}
+		\item specjalizacje szablonu są podobne do specjalizacji funkcji
+		\item podobnie jak dla funkcji możemy mieć:
+		\item niejawne konkretyzacje
+		\item jawne konkretyzacje
+		\item jawne specjalizacje
+		\item specjalizacje częściowe
+			
+	\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Konkretyzacja niejawna}
+	\begin{itemize}
+		\item konkretyzacja niejawna występowała w każdym przykładzie to tej pory
+		\begin{lstlisting}[frame=single]  % Start your code-block
+		
+			template <typename T1> 
+			class Nazwa_Klasy {...};
+		
+			int main()
+			{
+				...
+				Nazwa_Klasy<int> object;
+				Nazwa_Klasy<double> object;
+				...
+			}
+		\end{lstlisting}
+		\item kompilator generuje definicję, na podstawie szablonu
+	\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{Konkretyzacja jawna}
+	\begin{itemize}
+		\item można wymusić na kompilatorze konkretyzację szablonu
+		\begin{lstlisting}[frame=single]  % Start your code-block
+		
+			template <typename T1> 
+			class Nazwa_Klasy {...};
+		
+			template class Nazwa_Klasy<parametry>;
+			
+		\end{lstlisting}
+		\item nie powstaje żaden obiekt
+		\item wygenerowana jest definicja klasy razem z metodami
+	\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Specjalizacja jawna}
+	\begin{itemize}
+		\item definicja szablonu dla konkretnego typu
+		\item nie używany jest wtedy szablon ogólny
+		\item niezbędne, gdy dla danego typu danych szablon ma działać inaczej
+		\begin{lstlisting}[frame=single]  % Start your code-block
+		
+			template <typename T1> 
+			class Nazwa_Klasy {...};
+		
+			template <> 
+			class Nazwa_Klasy<typ> {...};
+			
+		\end{lstlisting}
+	\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Specjalizacja częściowa cz.1}
+	\begin{itemize}
+		\item udostępnia konkretny typ dla jednego z parametrów będącego typem:
+		\item którą wersję wybierze kompilator?
+		
+		\begin{lstlisting}[frame=single]  % Start your code-block
+		
+			/// ogolny szablon
+			template <typename T1, typename T2>
+			class Nazwa_Klasy 
+			{
+				...
+			};
+			
+			/// przykladowa specjalizacja czesciowa
+			template <typename T>
+			class Nazwa_Klasy<T, double>
+			{
+				...
+			};
+			
+		\end{lstlisting}
+		\alert{przykład\_1.4}
+	\end{itemize}
+
+\end{frame}
+
+
+
+
+\begin{frame}[fragile]{Specjalizacja częściowa cz.2}
+	\begin{itemize}
+		\item można zdefiniować również specjalizację częściową dla typu wskaźnikowego
+		\begin{lstlisting}[frame=single]  % Start your code-block
+		
+			/// ogolny szablon
+			template <typename T1>
+			class Nazwa_Klasy { ... };
+			
+			/// specjalizacja czesciowa dla wskaznikow
+			template <typename T>
+			class Nazwa_Klasy<typename T1*> { ... };
+			
+		\end{lstlisting}
+		\item jeśli nie ma zdefiniowanej wersji dla wskaźników, kompilator wygeneruje klasę dla szablonu ogólnego(często niebezpieczne)
+		
+		\alert{przykład\_1.5}
+	\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{decltype (C++ 11) cz.1}
+	\begin{itemize}
+		\item od standardu C++11 dostępne jest słowo kluczowe: decltype
+		\item używa się go w następujący sposób:
+		
+		\begin{lstlisting}[frame=single]  % Start your code-block
+		
+		double x;
+		decltype(x) y;
+			
+		\end{lstlisting}
+		\item w powyższym przykładzie decltype zwraca typ zmiennej x, czyli double i tworzy zmienna y, typu double
+		\item decltype może przyjmować również wyrażenia:
+		
+		
+		\begin{lstlisting}[frame=single]  % Start your code-block
+		
+		decltype(x + y) z = x + y;
+			
+		\end{lstlisting}
+		
+	\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{decltype (C++ 11) cz.2}
+	\begin{itemize}
+		\item dzięki decltype, możliwa jest opóźniona deklaracja typu zwracanego, gdy piszemy funkcję szablonową
+		\item czy można to zrobić w ten sposób?
+		
+		
+		\begin{lstlisting}[frame=single]  % Start your code-block
+		
+		template<typename T1, typename T2>
+		decltype(x + y) add(T1 x, T2 y)
+		{
+			return x + y;
+		}
+	
+			
+		\end{lstlisting}
+	\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}[fragile]{decltype (C++ 11) cz.3}
+	\begin{itemize}
+		\item nie można, ale da się zrobić to nieco inaczej
+		\item nagłówek funkcji:
+		
+		
+		
+		\begin{lstlisting}[frame=single]  % Start your code-block
+			
+			double add(int x, float y);
+		\end{lstlisting}
+	
+		\item można zapisać jako:
+		
+		\begin{lstlisting}[frame=single]  % Start your code-block
+			
+			auto add(int x, float y) -> double;
+		\end{lstlisting}
+		
+		\item analogicznie dla szablonu funkcji:
+		
+		\begin{lstlisting}[frame=single]  % Start your code-block
+		
+		template<typename T1, typename T2>
+		auto add(T1 x, T2 y) -> decltype(x + y)
+		{
+			return x + y;
+		}
+	
+			
+		\end{lstlisting}	
+	\end{itemize}
+
+\end{frame}
+
+
+
+\begin{frame}[fragile]{Statyczny polimorfizm}
+	\begin{itemize}
+		\item polimorficzne wywołanie funkcji nie musi być odbywać się poprzez użycie funkcji wirualnych
+		\item przy polimorfiźmie statycznym kompilator decyduje na podstawie typu, którą wersję funkcji wybrać
+		\item nie trzeba używać ani wskaźników, ani referencji
+		\item brak wspólnej hierarchii dziedziczenia
+		
+		\alert{przyklad\_1.6a}
+		
+		\alert{przyklad\_1.6b}
+	\end{itemize}
+
 \end{frame}
 
 \begin{frame}[fragile]{Typy domyślne}
@@ -586,6 +1143,7 @@ I2 copy(I1 first, I1 last, I2 out) {
    return copy_imp(first, last, out, has_trivial_assign<value_type>());
 }
     \end{lstlisting}
+    \alert{Przykład 3.6}
 \end{frame}
 
 \end{document}
