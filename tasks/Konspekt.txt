@@ -1,0 +1,38 @@
+Zadanie 1
+POLIMORFIZM DYNAMICZNY ---> POLIMORFIZM STATYCZNY
+Jest to przerobione zadanie od prof. Malinowskiego
+z przedmiotu Podstawy Grafiki Komputerowej
+Zadanie polegało na wyrysowaniu 3 kół, przedstawiających
+w różnych modelach kolorów" HSL, RGB, HSV. Istnieje klasa
+Circle, z której dziedziczą 3 koła które należało narysować
+
+Na potrzeby tych zajęć zadanie to zostało bardzo uproszczone
+i nie rysujemy, żadnych kółek, a jedynie liczymy czas obliczania
+poszczególnych pikseli
+
+Nie trzeba znać działania funkcji obliczających by rozwiązać to zadanie
+Można (a nawet trzeba) modyfikować każdy z plików, poza "Utils.h"
+
+W zadaniu należy przekształcić polimorfizm dynamiczny
+na polimorfizm statyczny
+
+Zadanie 3a
+Zadanie polega na implementacji własnych klas type_traits
+is_pointer sprawdza czy przekazany typ jest wskaźnikiem
+rank zwraca głębokość tabeli
+
+Nie można używać <type_traits> ani modyfikować pliku!
+
+Zadanie 3b
+W tym zadaniu należy zmodyfikować plik tak, aby program się wykonywał.
+
+Wskazówka:
+Będzie tutaj przydatny std::iterator_traits z biblioteki standardowej.
+Ma on zdefiniowane następujące typy:
+    difference_type	Iterator::difference_type
+    value_type	Iterator::value_type
+    pointer	Iterator::pointer
+    reference	Iterator::reference
+    iterator_category	Iterator::iterator_category
+
+Można modyfikować plik, ale nie można zmieniać funkcji main()

@@ -7,7 +7,7 @@
 typedef std::chrono::high_resolution_clock Clock;
 
 const int radius = 200;
-const int frames = 500;
+const int frames = 100;
 
 class App {
 public:
