@@ -1,4 +1,4 @@
-Zadanie 1
+*** Zadanie 1 ***
 POLIMORFIZM DYNAMICZNY ---> POLIMORFIZM STATYCZNY
 Jest to przerobione zadanie od prof. Malinowskiego
 z przedmiotu Podstawy Grafiki Komputerowej
@@ -16,14 +16,34 @@ Można (a nawet trzeba) modyfikować każdy z plików, poza "Utils.h"
 W zadaniu należy przekształcić polimorfizm dynamiczny
 na polimorfizm statyczny
 
-Zadanie 3a
+
+
+*** Zadanie 2 ***
+Zadanie polega na wykonaniu trzech mniejszych zadań. Załączony został jedynie plik
+Makefile i main.cpp, których nie wolno modyfikować (w szczególności pliku main.cpp).
+Należy utworzyć 3 pliki nagłówkowe i zaimplementować w nich takie funkcjonalności, aby
+program poprawnie się skompilował.
+
+Część 1: należy napisać prostą zmienną szablonową.
+Część 2: z wykorzystaniem szablonów oraz specjalizacji należy zaimplementować zmienną
+         szablonową w taki sposób, aby możliwe było obliczenie silni w czasie kompilacji.
+         Podpowiedź: parametry szablonów nie będące typami (non-type parameters).
+Część 3: z wykorzystaniem szablonów o zmiennej liczbie argumentów oraz specjalnej
+         technice rekurencyjnej należy napisać funkcję podobną do printf. Jeżeli
+         użytkownik poda złą (za dużą lub za małą) liczbę argumentów, funkcja powinna
+         rzucić wyjątek klasy std::string. Dla ułatwienia funkcja nie obsługuje
+         formatowania takiego jak określanie szerokości pól, precyzji itd.
+
+
+
+*** Zadanie 3a ***
 Zadanie polega na implementacji własnych klas type_traits
 is_pointer sprawdza czy przekazany typ jest wskaźnikiem
 rank zwraca głębokość tabeli
 
 Nie można używać <type_traits> ani modyfikować pliku!
 
-Zadanie 3b
+*** Zadanie 3b ***
 W tym zadaniu należy zmodyfikować plik tak, aby program się wykonywał.
 
 Wskazówka:
